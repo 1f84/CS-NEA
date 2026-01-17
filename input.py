@@ -1,12 +1,12 @@
-import pygame
-import time
+import pygame  # Importing pygame library to help me code my game.
+import time    # Importing time library for timing functions.
 
-class InputManager:
-    def __init__(self):
+class InputManager:  # InputManager class to handle user input
+    def __init__(self):  # Initialising input manager attributes
         self.last_move_time = time.time()  # Track the last time left or right was pressed for inactivity timeout
         self.prev_keys = {pygame.K_LEFT: False, pygame.K_RIGHT: False}  # Track previous key states
     
-    def handle(self, player, game_Width, game_over):
+    def handle(self, player, game_Width, game_over):  # Function to handle keyboard input
         keys = pygame.key.get_pressed()
         
         if game_over:

@@ -1,4 +1,4 @@
-import pygame   # Importing pygame and other necessary librarys so that I can code my game.
+import pygame   # Importing pygame and other necessary libraries so that I can code my game.
 import sys
 import random
 import time
@@ -43,7 +43,7 @@ obstacle_manager = ObstacleManager(180)
 input_manager = InputManager()
 coin_manager = CoinManager(600)  # 10 seconds at 60 FPS
 
-shop_manager = ShopManager(game_Width, game_Height, text_manager)
+shop_manager = ShopManager(game_Width, game_Height, text_manager, player)
 death_manager = DeathManager(game_Width, game_Height, text_manager)
 pause_manager = PauseManager(game_Width, game_Height, text_manager)
 
@@ -53,7 +53,7 @@ game_manager = GameManager(player, obstacle_manager, coin_manager, input_manager
 start_button, shop_button, settings_button, back_button = text_manager.get_buttons()
 volume_text = text_manager.volume_text
 
-while running:
+while running:  # Main game loop
     clock.tick(60)
     window.fill(WHITE)
     
@@ -69,7 +69,7 @@ while running:
             start_button, shop_button, settings_button, back_button = text_manager.get_buttons()  # Update buttons
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_pos = pygame.mouse.get_pos()
-            if state == MENU:
+            if state == MENU:  # Handle menu state clicks
                 if start_button.collidepoint(mouse_pos):
                     state = GAME
                     game_manager.reset_game(game_Width, Ground_y)
@@ -77,38 +77,39 @@ while running:
                     state = SHOP
                 elif settings_button.collidepoint(mouse_pos):
                     state = SETTINGS
-            elif state == SETTINGS:
+            elif state == SETTINGS:  # Handle settings state clicks
                 if back_button.collidepoint(mouse_pos):
                     state = MENU
-            elif state == SHOP:
+            elif state == SHOP:  # Handle shop state clicks
+                shop_manager.handle_click(mouse_pos)
                 if back_button.collidepoint(mouse_pos):
                     state = MENU
-            elif state == GAME and game_manager.game_over:
+            elif state == GAME and game_manager.game_over:  # Handle game over clicks
                 death_action = death_manager.handle_click(mouse_pos)
                 if death_action == 'replay':
                     game_manager.reset_game(game_Width, Ground_y)
                 elif death_action == 'menu':
                     state = MENU
                     game_manager.reset_game(game_Width, Ground_y)
-            elif state == GAME and not game_manager.game_over and not pause_manager.paused:
+            elif state == GAME and not game_manager.game_over and not pause_manager.paused:  # Handle in-game pause clicks
                 pause_action = game_manager.handle_pause_click(mouse_pos)
                 if pause_action == 'pause_clicked':
                     pass  # pause_manager already handles this
-            elif state == GAME and pause_manager.paused and not pause_manager.countdown_active:
+            elif state == GAME and pause_manager.paused and not pause_manager.countdown_active:  # Handle resume clicks
                 resume_action = game_manager.handle_pause_click(mouse_pos)
                 if resume_action == 'resume_clicked':
                     pass  # pause_manager already handles this
 
-    if state == MENU:
-        text_manager.draw_menu(window)
+    if state == MENU:  # Draw menu screen
+        text_manager.draw_menu(window, game_manager.high_score)
     
-    elif state == SETTINGS:
+    elif state == SETTINGS:  # Draw settings screen
         text_manager.draw_settings(window)
     
-    elif state == SHOP:
+    elif state == SHOP:  # Draw shop screen
         shop_manager.draw(window, back_button)
     
-    elif state == GAME:
+    elif state == GAME:  # Game state logic
         # Update game logic
         game_manager.update_game(game_Width, game_Height, Obstacle_Color, Ground_y)
         game_manager.update_pause()
@@ -118,10 +119,10 @@ while running:
         
         # Draw death screen if game over
         if game_manager.game_over:
-            death_manager.draw(window, game_manager.coin_counter[0])
+            death_manager.draw(window, game_manager.coin_counter[0], game_manager.score)
 
-    pygame.display.update()
+    pygame.display.update()  # Update the display
     
 
 pygame.quit()  # Quits pygame
-sys.exit()     # Exits the programobstacle_spe
+sys.exit()     # Exits the program

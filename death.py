@@ -1,16 +1,16 @@
-import pygame
+import pygame  # Importing pygame library to help me code my game.
 
-class DeathManager:
-    def __init__(self, game_width, game_height, text_manager):
-        self.game_width = game_width
-        self.game_height = game_height
-        self.text_manager = text_manager
+class DeathManager:  # DeathManager class to handle game over screen
+    def __init__(self, game_width, game_height, text_manager):  # Initialising death manager attributes
+        self.game_width = game_width      # Game window width
+        self.game_height = game_height    # Game window height
+        self.text_manager = text_manager  # Text manager for rendering text
         
         # Create death screen buttons
         self.replay_button = pygame.Rect(game_width // 2 - 100, game_height // 2 + 50, 200, 50)
         self.menu_button = pygame.Rect(game_width // 2 - 100, game_height // 2 + 120, 200, 50)
     
-    def draw(self, window, coins_collected):
+    def draw(self, window, coins_collected, score):  # Function to draw the death screen
         # Draw semi-transparent overlay
         overlay = pygame.Surface((self.game_width, self.game_height))
         overlay.set_alpha(180)
@@ -25,6 +25,10 @@ class DeathManager:
         coins_text = self.text_manager.render_sub_text(f"Coins Collected: {coins_collected}")
         window.blit(coins_text, (self.game_width // 2 - coins_text.get_width() // 2, self.game_height // 2 - 20))
         
+        # Draw score this round
+        score_text = self.text_manager.render_sub_text(f"Score: {score}")
+        window.blit(score_text, (self.game_width // 2 - score_text.get_width() // 2, self.game_height // 2 + 10))
+        
         # Draw replay button
         pygame.draw.rect(window, (0, 255, 0), self.replay_button)
         replay_txt = self.text_manager.render_button_text("Replay")
@@ -35,7 +39,7 @@ class DeathManager:
         menu_txt = self.text_manager.render_button_text("Main Menu")
         window.blit(menu_txt, (self.menu_button.centerx - menu_txt.get_width() // 2, self.menu_button.centery - menu_txt.get_height() // 2))
     
-    def handle_click(self, mouse_pos):
+    def handle_click(self, mouse_pos):  # Function to handle mouse clicks on buttons
         if self.replay_button.collidepoint(mouse_pos):
             return 'replay'
         elif self.menu_button.collidepoint(mouse_pos):
